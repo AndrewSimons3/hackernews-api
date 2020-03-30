@@ -15,16 +15,20 @@ class App extends React.Component {
   // });
   // }
 
-  searchByAuthor = () => {
-    fetch("http://hn.algolia.com/api/v1/search?tags=story,author_pg").then( (resp) => {
+  searchByAuthor = (event) => {
+    event.preventDefault();
+    console.log(document.getElementById("authorName").value)
+    fetch("http://hn.algolia.com/api/v1/search?tags=story,author_pg&query="+document.getElementById("authorName").value).then( (resp) => {
       return resp.json();
   }).then( (data) => {
     this.setState({stories: data.hits})
+    console.log(data.hits)
   });
 }
 
-  searchByDate = () => {
-    fetch("http://hn.algolia.com/api/v1/search_by_date?tags=story").then( (resp) => {
+  searchByDate = (event) => {
+    event.preventDefault();
+    fetch("http://hn.algolia.com/api/v1/search?query=").then( (resp) => {
       return resp.json();
   }).then( (data) => {
     this.setState({stories: data.hits})
@@ -35,17 +39,16 @@ class App extends React.Component {
   render() {
   
     return(
-
+      <div>
       <div>
       <form onSubmit={this.searchByAuthor}>
         <label>
           Author
-          <input type="text" name="name" />
+          <input id="authorName" type="text" name="name" />
         </label>
         <input type="submit" value="Search"></input>
-        {this.state.stories.map(
-        
       </form>
+
       <form onSubmit={this.searchByDate}>
         <label>
           Date
@@ -54,6 +57,15 @@ class App extends React.Component {
         <input type="submit" value="Search"></input>
       </form>
       </div>
+      
+      <div className="results">
+        {this.state.stories.map((story, index) => {
+          return (<div key={index}>{story.title} <br></br> {story.author} <br></br> {story.created_at} <p></p></div>)
+        })}
+      </div>
+      </div>
+
+
     )
   }
 }
